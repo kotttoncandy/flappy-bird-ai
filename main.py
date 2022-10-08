@@ -61,10 +61,9 @@ def eval_genomes(genomes, config):
                 if pygame.Rect.colliderect(players[p].rect, pipe.rect):
                     players[p].jump_timer.stop()
                     players.pop(p)
-                    ges.pop(p)
 
         for player, x in enumerate(players):
-            if len(ges) >= 1:
+            if len(ges) >= len(players):
                 ges[player].fitness += 0.1
             if players[player].jumping:
                 players[player].rect.top -= 100 * dt
@@ -74,21 +73,21 @@ def eval_genomes(genomes, config):
             if players[player].rect.bottom > 620:
                 players[player].jump_timer.stop()
                 players.pop(player)
-                ges.pop(player)
                 continue
             
             p = pygame.draw.rect(screen, (250, 250, 90), players[player].rect)
             players[player].fitness += 1 * dt
             if pipes:
-                index = pipes.index(pipes[-1])
-                output = nets[player].activate((
-                players[player].rect.bottom, 
-                abs(players[player].rect.bottom - pipes[index].rect.bottom),
-                abs(players[player].rect.bottom - pipes[index-1].rect.bottom),
-                620 - players[player].rect.bottom))
+                if len(nets) >= len(players):
+                    index = pipes.index(pipes[-1])
+                    output = nets[player].activate((
+                    players[player].rect.bottom, 
+                    abs(players[player].rect.bottom - pipes[index].rect.bottom),
+                    abs(players[player].rect.bottom - pipes[index-1].rect.bottom),
+                    620 - players[player].rect.bottom))
 
-                if output[0] > 0.5:
-                    players[player].jump()
+                    if output[0] > 0.5:
+                        players[player].jump()
 
         if not players:
             players.clear()
