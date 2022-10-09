@@ -6,4 +6,4 @@ class Pipe():
         self.rect = pygame.Rect(630, y, 80, 1000)
 
     def update(self, delta):
-        self.rect.left -= 200 * delta
+        self.rect.left -= 300 * delta

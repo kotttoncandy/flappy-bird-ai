@@ -28,8 +28,7 @@ def eval_genomes(genomes, config):
         players.append(Player())
     dead = []
     pipes = []
-    pipe_timer = RepeatedTimer(1.8, add_pipe, True, pipes)
-
+    pipe_timer = RepeatedTimer(1.2, add_pipe, True, pipes)
     screen = pygame.display.set_mode((1920 / 1.75, 1080 / 1.75))
 
     # Set the caption of the screen
@@ -40,7 +39,7 @@ def eval_genomes(genomes, config):
         net = neat.nn.FeedForwardNetwork.create(genome, config)
         nets.append(net)
     clock = pygame.time.Clock()
-    add_pipe(pipes)
+
     while running and players:
         dt = clock.tick(60) / 1000
         screen.fill((0, 200, 255))
@@ -48,9 +47,6 @@ def eval_genomes(genomes, config):
             if event.type == pygame.QUIT:
                 pipe_timer.stop()
                 os._exit(os.EX_OK)
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_j:
-                    players.clear()
 
         for pipe in pipes:
 
@@ -66,9 +62,9 @@ def eval_genomes(genomes, config):
             if len(ges) >= len(players):
                 ges[player].fitness += 0.1
             if players[player].jumping:
-                players[player].rect.top -= 100 * dt
+                players[player].rect.top -= 1
             else:
-                players[player].rect.bottom += 250 * dt
+                players[player].rect.bottom += 200 * dt
 
             if players[player].rect.bottom > 620:
                 players[player].jump_timer.stop()
@@ -78,7 +74,7 @@ def eval_genomes(genomes, config):
             p = pygame.draw.rect(screen, (250, 250, 90), players[player].rect)
             players[player].fitness += 1 * dt
             if pipes:
-                if len(nets) >= len(players):
+                try:
                     index = pipes.index(pipes[-1])
                     output = nets[player].activate((
                     players[player].rect.bottom, 
@@ -88,6 +84,8 @@ def eval_genomes(genomes, config):
 
                     if output[0] > 0.5:
                         players[player].jump()
+                except IndexError:
+                    pass
 
         if not players:
             players.clear()
